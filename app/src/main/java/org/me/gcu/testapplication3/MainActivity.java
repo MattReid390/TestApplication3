@@ -1,24 +1,60 @@
 package org.me.gcu.testapplication3;
 
-import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class MainActivity extends AppCompatActivity {
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.View;
+
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity implements OnClickListener {
+    private Button exitButton;
+    private EditText nameEntry;
+    private String name;
+
+    //Called when the activity is first created
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        exitButton = (Button)findViewById(R.id.exitButton);
+        nameEntry = (EditText)findViewById(R.id.nameEntry);
+        nameEntry.setWidth(120);
+        exitButton.setOnClickListener(this);
+        nameEntry.setFocusable(true);
+    } //End of onCreate
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+    public void onClick(View v) {
+        //Check for the exit button. Pop-up dialogue if found
+        if (v == exitButton) {
+            name = nameEntry.getText().toString();
+            showtbDialog(name);
+        }
+    } //End of onClick
+
+    private void showtbDialog(String salutationName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(salutationName + ", are you sure you want to exit?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Toast.makeText(getApplicationContext(), name + ", you pressed Yes", Toast.LENGTH_SHORT).show();
+                MainActivity.this.finish();
+            }
         });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Toast.makeText(getApplicationContext(), name + ", you pressed No", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
-}
+} //End of Activity class
